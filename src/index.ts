@@ -33,7 +33,8 @@ const main = () => {
     const { message: updateMessage4 } = scoreboard.updateScore(gameId4, 1, 1);
     console.log('updateMessage4 :: ', updateMessage4)
 
-    scoreboard.finishGame(gameId3);
+    const { message: finishGameMessage } = scoreboard.finishGame(gameId3);
+    console.log('finishGameMessage :: ', finishGameMessage)
 
     const summary = scoreboard.getSummary();
     console.log('summary :: ', summary)
