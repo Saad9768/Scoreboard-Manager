@@ -72,18 +72,12 @@ export class Scoreboard {
             return { scoreUpdated: false, message: 'Cannot be incremented, score will be same' }
         }
         if (homeScore - currentHomeScore !== 1 && awayScore - currentAwayScore !== 1) {
-            return { scoreUpdated: false, message: 'Score cannot be updated1' }
+            return { scoreUpdated: false, message: 'Score should be incremented by 1' }
         }
         if (homeScore !== currentHomeScore && awayScore !== currentAwayScore) {
-            return { scoreUpdated: false, message: 'Score cannot be updated2' }
+            return { scoreUpdated: false, message: 'Update one score at a time' }
         }
-        console.log('=====================before===================')
-        console.log('this.sortedGames before ::', this.sortedGames)
-        console.log('game before ::', game)
         this.removeGameFromSortedGames(game);
-        console.log('this.sortedGames after ::', this.sortedGames)
-        console.log('===========================after=============')
-
         if (homeScore) {
             game.homeScore = homeScore
         }

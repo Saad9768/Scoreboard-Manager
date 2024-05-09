@@ -155,11 +155,11 @@ describe('Scoreboard', () => {
 
     const { scoreUpdated: scoreUpdated_1, message: updateMessage_1 } = scoreboard.updateScore(gameId, -1, 0);
     expect(scoreUpdated_1).toBe(false);
-    expect(updateMessage_1).toBe('Score cannot be updated1');
+    expect(updateMessage_1).toBe('Score should be incremented by 1');
 
     const { scoreUpdated: scoreUpdated0, message: updateMessage0 } = scoreboard.updateScore(gameId, 2, 1);
     expect(scoreUpdated0).toBe(false);
-    expect(updateMessage0).toBe('Score cannot be updated2');
+    expect(updateMessage0).toBe('Update one score at a time');
 
     const { gameDeleted, message: finisMessage } = scoreboard.finishGame(gameId);
     expect(gameDeleted).toBe(true);
