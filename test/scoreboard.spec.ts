@@ -26,7 +26,8 @@ describe('Scoreboard', () => {
       awayTeam: 'Away',
       homeScore: 0,
       awayScore: 0,
-      startTime: expect.any(Number)
+      startTime: expect.any(Number),
+      scoredTime: []
     });
   });
 
@@ -38,15 +39,16 @@ describe('Scoreboard', () => {
     jest.mocked(Utils.guid).mockReturnValueOnce(gameId1);
 
     const { gameId } = scoreboard.startGame(homeTeam, awayTeam);
-    const updateResult = scoreboard.updateScore(gameId, 3, 2);
+    const updateResult = scoreboard.updateScore(gameId, 1, 0);
     expect(updateResult).toEqual({ scoreUpdated: true, message: 'Score Updated' });
     expect(scoreboard.getGame(gameId)).toEqual({
       gameId: gameId1,
       homeTeam,
       awayTeam,
-      homeScore: 3,
-      awayScore: 2,
-      startTime: expect.any(Number)
+      homeScore: 1,
+      awayScore: 0,
+      startTime: expect.any(Number),
+      scoredTime: expect.arrayContaining([expect.any(Number)])
     });
   });
 
@@ -99,13 +101,19 @@ describe('Scoreboard', () => {
     jest.mocked(Utils.guid)
       .mockReturnValueOnce(gameId);
     scoreboard.startGame(homeTeam, awayTeam);
-    scoreboard.updateScore(gameId, 3, 2);
+    scoreboard.updateScore(gameId, 0, 1);
     expect(scoreboard.getGame(gameId)).toEqual(
-      { gameId, homeTeam, awayTeam, homeScore: 3, awayScore: 2, startTime: expect.any(Number) }
+      {
+        gameId, homeTeam, awayTeam, homeScore: 0, awayScore: 1, startTime: expect.any(Number),
+        scoredTime: expect.arrayContaining([expect.any(Number)])
+      }
     );
-    scoreboard.updateScore(gameId, 5, 4);
+    scoreboard.updateScore(gameId, 1, 1);
     expect(scoreboard.getGame(gameId)).toEqual(
-      { gameId, homeTeam, awayTeam, homeScore: 5, awayScore: 4, startTime: expect.any(Number) }
+      {
+        gameId, homeTeam, awayTeam, homeScore: 1, awayScore: 1, startTime: expect.any(Number),
+        scoredTime: expect.arrayContaining([expect.any(Number)])
+      }
     );
   });
 
@@ -137,63 +145,118 @@ describe('Scoreboard', () => {
 
     scoreboard.startGame(homeTeam, awayTeam);
 
-    const { scoreUpdated: scoreUpdated1, message: updateMessage1 } = scoreboard.updateScore(gameId, 3, 2);
-    expect(scoreUpdated1).toBe(true);
-    expect(updateMessage1).toBe('Score Updated');
+    const { scoreUpdated: scoreUpdated10, message: updateMessage10 } = scoreboard.updateScore(gameId, 1, 0);
+    expect(scoreUpdated10).toBe(true);
+    expect(updateMessage10).toBe('Score Updated');
+
+    const { scoreUpdated: scoreUpdated1, message: updateMessage1 } = scoreboard.updateScore(gameId, 1, 0);
+    expect(scoreUpdated1).toBe(false);
+    expect(updateMessage1).toBe('Cannot be incremented, score will be same');
+
+    const { scoreUpdated: scoreUpdated_1, message: updateMessage_1 } = scoreboard.updateScore(gameId, -1, 0);
+    expect(scoreUpdated_1).toBe(false);
+    expect(updateMessage_1).toBe('Score cannot be updated1');
+
+    const { scoreUpdated: scoreUpdated0, message: updateMessage0 } = scoreboard.updateScore(gameId, 2, 1);
+    expect(scoreUpdated0).toBe(false);
+    expect(updateMessage0).toBe('Score cannot be updated2');
 
     const { gameDeleted, message: finisMessage } = scoreboard.finishGame(gameId);
     expect(gameDeleted).toBe(true);
     expect(finisMessage).toBe('Game deleted');
 
-    const { scoreUpdated: scoreUpdated2, message: updateMessage2 } = scoreboard.updateScore(gameId, 3, 2);
+    const { scoreUpdated: scoreUpdated2, message: updateMessage2 } = scoreboard.updateScore(gameId, 2, 0);
     expect(scoreUpdated2).toBe(false);
     expect(updateMessage2).toBe('Game not found or deleted');
   });
 
   it('should sort games correctly in summary', () => {
+    const mockedGameId0 = 'gameId0';
     const mockedGameId1 = 'gameId1';
     const mockedGameId2 = 'gameId2';
     const mockedGameId3 = 'gameId3';
     const mockedGameId4 = 'gameId4';
 
+    const homeTeam0 = 'India';
+    const awayTeam0 = 'Qatar';
+
     const homeTeam1 = 'Mexico';
     const awayTeam1 = 'Canada';
+
     const homeTeam2 = 'Spain';
     const awayTeam2 = 'Brazil';
+
     const homeTeam3 = 'Germany';
     const awayTeam3 = 'Portugal';
+
     const homeTeam4 = 'Hungary';
     const awayTeam4 = 'Austria';
 
 
     jest.mocked(Utils.guid)
+      .mockReturnValueOnce(mockedGameId0)
       .mockReturnValueOnce(mockedGameId1)
       .mockReturnValueOnce(mockedGameId2)
       .mockReturnValueOnce(mockedGameId3)
       .mockReturnValueOnce(mockedGameId4);
 
+    scoreboard.startGame(homeTeam0, awayTeam0);
+
     scoreboard.startGame(homeTeam1, awayTeam1);
-    scoreboard.updateScore(mockedGameId1, 3, 2);
+    scoreboard.updateScore(mockedGameId1, 0, 1);
 
     scoreboard.startGame(homeTeam2, awayTeam2);
-    scoreboard.updateScore(mockedGameId2, 4, 2);
+    scoreboard.updateScore(mockedGameId2, 0, 1);
 
     scoreboard.startGame(homeTeam3, awayTeam3);
-    scoreboard.updateScore(mockedGameId3, 1, 1);
+    scoreboard.updateScore(mockedGameId3, 1, 0);
 
     scoreboard.startGame(homeTeam4, awayTeam4);
-    scoreboard.updateScore(mockedGameId4, 1, 1);
+    scoreboard.updateScore(mockedGameId4, 1, 0);
 
     scoreboard.finishGame(mockedGameId3);
 
     const summary = scoreboard.getSummary();
 
-    expect(summary.length).toBe(3);
+    expect(summary.length).toBe(4);
 
     expect(summary).toEqual([
-      { gameId: mockedGameId2, homeTeam: homeTeam2, awayTeam: awayTeam2, homeScore: 4, awayScore: 2, startTime: expect.any(Number) },
-      { gameId: mockedGameId1, homeTeam: homeTeam1, awayTeam: awayTeam1, homeScore: 3, awayScore: 2, startTime: expect.any(Number) },
-      { gameId: mockedGameId4, homeTeam: homeTeam4, awayTeam: awayTeam4, homeScore: 1, awayScore: 1, startTime: expect.any(Number) }
+      {
+        gameId: mockedGameId1,
+        homeTeam: homeTeam1,
+        awayTeam: awayTeam1,
+        homeScore: 0,
+        awayScore: 1,
+        startTime: expect.any(Number),
+        scoredTime: expect.arrayContaining([expect.any(Number)])
+      },
+      {
+        gameId: mockedGameId2,
+        homeTeam: homeTeam2,
+        awayTeam: awayTeam2,
+        homeScore: 0,
+        awayScore: 1,
+        startTime: expect.any(Number),
+        scoredTime: expect.arrayContaining([expect.any(Number)])
+      },
+      {
+        gameId: mockedGameId4,
+        homeTeam: homeTeam4,
+        awayTeam: awayTeam4,
+        homeScore: 1,
+        awayScore: 0,
+        startTime: expect.any(Number),
+        scoredTime: expect.arrayContaining([expect.any(Number)])
+      },
+      {
+        gameId: mockedGameId0,
+        homeTeam: homeTeam0,
+        awayTeam: awayTeam0,
+        homeScore: 0,
+        awayScore: 0,
+        startTime: expect.any(Number),
+        scoredTime: []
+      }
     ]);
   });
 });

@@ -6,6 +6,7 @@ type Game = {
     homeScore: number;
     awayScore: number;
     startTime: number;
+    scoredTime: number[];
 };
 
 export class Scoreboard {
@@ -45,7 +46,8 @@ export class Scoreboard {
             awayTeam,
             homeScore: 0,
             awayScore: 0,
-            startTime: Date.now()
+            startTime: Date.now(),
+            scoredTime: []
         };
         this.games.set(gameId, game);
         this.gameInProgress.set(homeTeam, gameId);
@@ -59,17 +61,36 @@ export class Scoreboard {
     }
 
     updateScore(gameId: string, homeScore: number, awayScore: number) {
+
         const game = this.getGame(gameId);
         if (!game) {
             return { scoreUpdated: false, message: 'Game not found or deleted' }
         }
+        const { homeScore: currentHomeScore, awayScore: currentAwayScore, scoredTime } = game;
+
+        if (currentHomeScore === homeScore && currentAwayScore === awayScore) {
+            return { scoreUpdated: false, message: 'Cannot be incremented, score will be same' }
+        }
+        if (homeScore - currentHomeScore !== 1 && awayScore - currentAwayScore !== 1) {
+            return { scoreUpdated: false, message: 'Score cannot be updated1' }
+        }
+        if (homeScore !== currentHomeScore && awayScore !== currentAwayScore) {
+            return { scoreUpdated: false, message: 'Score cannot be updated2' }
+        }
+        console.log('=====================before===================')
+        console.log('this.sortedGames before ::', this.sortedGames)
+        console.log('game before ::', game)
         this.removeGameFromSortedGames(game);
+        console.log('this.sortedGames after ::', this.sortedGames)
+        console.log('===========================after=============')
+
         if (homeScore) {
             game.homeScore = homeScore
         }
         if (awayScore) {
             game.awayScore = awayScore
         }
+        scoredTime.push(new Date().getTime())
         this.insertGameIntoSortedArray(game);
         return { scoreUpdated: true, message: 'Score Updated' }
     }
@@ -91,27 +112,53 @@ export class Scoreboard {
     }
 
     private removeGameFromSortedGames(game: Game) {
-        let gameIndex = this.findGameIndexByGameId(game);
+        const gameIndex = this.findGameIndexByGameId(game);
         if (gameIndex !== -1) {
             this.sortedGames.splice(gameIndex, 1)
         }
+        // else {
+        //     console.log('========================================')
+        //     console.log('game ::', game)
+        //     console.log('gameIndex ::', gameIndex)
+        //     console.log('this.sortedGames ::', this.sortedGames)
+        //     console.log('========================================')
+        // }
     }
     private findGameIndexByGameId(game: Game) {
-        let left = 0;
-        let right = this.sortedGames.length - 1;
+        let low = 0;
+        let high = this.sortedGames.length - 1;
+        const gameScore = game.homeScore + game.awayScore;
 
-        while (left <= right) {
-            const mid = Math.floor((left + right) / 2);
+        while (low <= high) {
+            const mid = Math.floor((low + high) / 2);
             const midGame = this.sortedGames[mid];
-            if (midGame.gameId === game.gameId) {
-                return mid;
-            } else if (
-                (midGame.homeScore + midGame.awayScore) >
-                (game.homeScore + game.awayScore)
-            ) {
-                left = mid + 1;
+            const midScore = midGame.homeScore + midGame.awayScore;
+            if (midScore === gameScore) {
+                if (midGame.gameId === game.gameId) {
+                    return mid;
+                } else {
+                    let left = mid - 1;
+                    let right = mid + 1;
+                    const sameLeftGameScore = left >= 0 && this.sortedGames[left].homeScore + this.sortedGames[left].awayScore;
+                    while (left >= low && sameLeftGameScore === gameScore) {
+                        if (this.sortedGames[left].gameId === game.gameId) {
+                            return left;
+                        }
+                        left--;
+                    }
+                    const sameRightGameScore = right >= 0 && this.sortedGames[right].homeScore + this.sortedGames[right].awayScore;
+                    while (right <= high && sameRightGameScore === gameScore) {
+                        if (this.sortedGames[right].gameId === game.gameId) {
+                            return right;
+                        }
+                        right++;
+                    }
+                    return -1;
+                }
+            } else if (midScore > gameScore) {
+                low = mid + 1;
             } else {
-                right = mid - 1;
+                high = mid - 1;
             }
         }
         return -1;

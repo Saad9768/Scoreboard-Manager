@@ -1,0 +1,24 @@
+Task 1:
+Refactor the solution to allow only incremental score changes where the time of the goal is saved and displayed in the scoreboard.
+
+The output would be something like this:
+Match started:
+0 - 0
+Goal scored after 5 minutes:
+0 - 1 5"
+Goal scored after 15 minutes:
+1 - 1 5" 20" 
+
+Task 2:
+Refactor the solution to include the player name who scored a goal, the player name initials should be displayed along with the goal time in the scoreboard.
+
+The output would be something like this:
+Match started:
+0 - 0
+Goal scored after 5 minutes:
+0 - 1 5" (A.B)
+Goal scored after 15 minutes:
+1 - 1 5" (A.B) 20" (C.D)
+
+Task 3:
+Refactor the solution to support yellow/red cards information, similar to how the match score is displayed, the score board should display the cards information.
