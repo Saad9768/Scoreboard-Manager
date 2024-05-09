@@ -61,6 +61,19 @@ Game = {
     goals: Goal[];
     fouls: Foul[];
 };
+Foul = {
+    playerInitials: string;
+    foulTime: number;
+    foulType: FoulType;
+};
+Goal = {
+    playerInitials: string;
+    scoreTime: number;
+};
+enum FoulType {
+    YELLOW_CARD = 'Yellow Card',
+    RED_CARD= 'Red Card',
+};
 ```
 
 Below is how you can use the Scoreboard class within your own projects:
