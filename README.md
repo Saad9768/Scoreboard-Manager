@@ -47,7 +47,23 @@ npm run test:coverage
 
 ## Usage
 
-Here is how you can use the Scoreboard class within your own projects:
+#### Type
+- Game has many goals.
+- Game has many fouls.
+```
+Game = {
+    gameId: string;
+    homeTeam: string;
+    awayTeam: string;
+    homeScore: number;
+    awayScore: number;
+    startTime: number;
+    goals: Goal[];
+    fouls: Foul[];
+};
+```
+
+Below is how you can use the Scoreboard class within your own projects:
 
 #### Importing the Class
 
@@ -92,7 +108,7 @@ console.log({ gameDeleted, message });
 #### Getting the Sorted Game Summary
 
 ```
-const gamesSummary = scoreboard.getSummary();
+const gamesSummary:Games[] = scoreboard.getSummary();
 console.log(gamesSummary);
 ```
 
