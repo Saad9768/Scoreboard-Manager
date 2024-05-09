@@ -14,23 +14,23 @@ const main = () => {
 
     const { gameId: gameId1, message: startMessage1 } = scoreboard.startGame(homeTeam1, awayTeam1);
     console.log('startMessage1 :: ', startMessage1)
-    const { message: updateMessage1 } = scoreboard.updateScore(gameId1, 3, 2);
+    const { message: updateMessage1 } = scoreboard.updateScore(gameId1, 1, 0, 'A.B');
     console.log('updateMessage1 :: ', updateMessage1)
 
 
     const { gameId: gameId2, message: startMessage2 } = scoreboard.startGame(homeTeam2, awayTeam2);
     console.log('startMessage2 :: ', startMessage2)
-    const { message: updateMessage2 } = scoreboard.updateScore(gameId2, 4, 3);
+    const { message: updateMessage2 } = scoreboard.updateScore(gameId2, -1, 0, 'C.D');
     console.log('updateMessage2 :: ', updateMessage2)
 
     const { gameId: gameId3, message: startMessage3 } = scoreboard.startGame(homeTeam3, awayTeam3);
     console.log('startMessage3 :: ', startMessage3)
-    const { message: updateMessage3 } = scoreboard.updateScore(gameId3, 4, 4);
+    const { message: updateMessage3 } = scoreboard.updateScore(gameId3, 0, 1, 'E.F');
     console.log('updateMessage3 :: ', updateMessage3)
 
     const { gameId: gameId4, message: startMessage4 } = scoreboard.startGame(homeTeam4, awayTeam4);
     console.log('startMessage4 :: ', startMessage4)
-    const { message: updateMessage4 } = scoreboard.updateScore(gameId4, 1, 1);
+    const { message: updateMessage4 } = scoreboard.updateScore(gameId4, 1, 1, 'G.H');
     console.log('updateMessage4 :: ', updateMessage4)
 
     const { message: finishGameMessage } = scoreboard.finishGame(gameId3);

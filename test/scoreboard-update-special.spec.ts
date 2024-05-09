@@ -18,26 +18,25 @@ describe('Scoreboard:Update Special', () => {
 
     jest.mocked(Utils.guid).mockReturnValueOnce(gameId1);
 
+    
     const { gameId } = scoreboard.startGame(homeTeam, awayTeam);
-    const updateResult1 = scoreboard.updateScore(gameId, 1, 0, playerInitials);
-    expect(updateResult1).toEqual({ scoreUpdated: true, message: 'Score Updated' });
+
+    const updateResult1 = scoreboard.updateScore(gameId, -1, 0, playerInitials);
+    expect(updateResult1).toEqual({ scoreUpdated: false, message: 'Score should be incremented by 1' });
+
     expect(scoreboard.getGame(gameId)).toEqual({
       gameId: gameId1,
       homeTeam,
       awayTeam,
-      homeScore: 1,
+      homeScore: 0,
       awayScore: 0,
       startTime: expect.any(Number),
-      goals: [{
-        scoreTime: expect.any(Number),
-        playerInitials
-      }],
+      goals: [],
       fouls: []
     });
 
-    const updateResult2 = scoreboard.updateScore(gameId, -1, 0, playerInitials);
-    expect(updateResult2).toEqual({ scoreUpdated: false, message: 'Score should be incremented by 1' });
-
+    const updateResult2 = scoreboard.updateScore(gameId, 1, 0, playerInitials);
+    expect(updateResult2).toEqual({ scoreUpdated: true, message: 'Score Updated' });
     expect(scoreboard.getGame(gameId)).toEqual({
       gameId: gameId1,
       homeTeam,
