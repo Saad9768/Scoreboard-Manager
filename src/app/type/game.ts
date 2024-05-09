@@ -4,7 +4,7 @@ type Goal = {
     playerInitials: string;
     scoreTime: number;
 };
-type Foul = {
+export type Foul = {
     playerInitials: string;
     foulTime: number;
     foulType: FoulType;

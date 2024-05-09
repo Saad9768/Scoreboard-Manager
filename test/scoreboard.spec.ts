@@ -1,5 +1,4 @@
 import { Scoreboard } from '../src/app/scoreboard';
-import { FoulType } from '../src/app/type/foul_enum';
 import { Utils } from '../src/app/utils';
 
 jest.mock('../src/app/utils')

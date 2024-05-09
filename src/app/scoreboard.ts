@@ -1,5 +1,5 @@
 import { FoulType } from "./type/foul_enum";
-import { Game } from "./type/game";
+import { Foul, Game } from "./type/game";
 import { Utils } from "./utils";
 
 export class Scoreboard {
@@ -54,9 +54,18 @@ export class Scoreboard {
         return this.games.get(gameId);
     }
 
-    private checkScore(game: Game, homeScore: number, awayScore: number) {
-        const { homeScore: currentHomeScore, awayScore: currentAwayScore } = game;
+    private fetchPlayerCard(fouls: Foul[], playerInitials: string) {
+        const cardedPlayer = fouls.filter(r => r.playerInitials === playerInitials);
+        const cardedPlayerLastIndex = cardedPlayer.length - 1;
+        return cardedPlayerLastIndex >= 0 && cardedPlayer[cardedPlayerLastIndex].foulType;
+    }
 
+    private checkScore(game: Game, homeScore: number, awayScore: number, playerInitials: string) {
+        const { homeScore: currentHomeScore, awayScore: currentAwayScore, fouls } = game;
+        const foulType = this.fetchPlayerCard(fouls, playerInitials);
+        if (foulType === FoulType.RED_CARD) {
+            return { scoreUpdated: false, message: `Player already has already ${FoulType.RED_CARD}` }
+        }
         if (currentHomeScore === homeScore && currentAwayScore === awayScore) {
             return { scoreUpdated: false, message: 'Cannot be incremented, score will be same' }
         }
@@ -73,7 +82,7 @@ export class Scoreboard {
         if (!game) {
             return { scoreUpdated: false, message: 'Game not found or deleted' }
         }
-        const inValidScoreMessage = this.checkScore(game, homeScore, awayScore)
+        const inValidScoreMessage = this.checkScore(game, homeScore, awayScore, playerInitials)
         if (inValidScoreMessage) {
             return inValidScoreMessage;
         }
@@ -99,13 +108,13 @@ export class Scoreboard {
             return { foulUpdated: false, message: 'Game not found or deleted' }
         }
         const { fouls } = game;
-
+        let currentFoulType = this.fetchPlayerCard(fouls, playerInitials);
         let foulType = FoulType.YELLOW_CARD;
-        const foulPlayer = fouls.filter(r => r.playerInitials === playerInitials && r.playerInitials === playerInitials);
-        if (foulPlayer.length === 1) {
-            foulType = FoulType.RED_CARD;
-        } else if (foulPlayer.length >= 2) {
+        if (currentFoulType === FoulType.RED_CARD) {
             return { foulUpdated: false, message: `Player already got ${FoulType.RED_CARD}` }
+        }
+        if (currentFoulType === FoulType.YELLOW_CARD) {
+            foulType = FoulType.RED_CARD;
         }
         fouls.push({
             playerInitials,
