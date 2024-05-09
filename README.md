@@ -5,12 +5,12 @@ This TypeScript module provides a simple yet robust way to manage games and scor
 ## Features
 
 - **Start a Game**: Initiate a game between two teams.
-- **Update Scores**: Modify the scores during a game.
+- **Update Scores**: Modify the scores during a game. It checks the score inputed are same or not incremental or invalid or player who is assigned a goal is already red carded or not.
 - **Finish a Game**: Mark a game as finished and remove it from the tracking system.
-- **Get Game Summary**: Retrieve a list of games sorted by total score and starting time.
+- **Get Game Summary**: Retrieve a list of games sorted by total score and starting time. It also get the name(s) of the player(s) for they have scored or performed foul at the respective time.
 
 ## Description
-- It uses binary search to get the game from the gameId. The complexity is ```O(log(n))```
+- It uses binary search to get the game from the gameId. The complexity is ```O(log(n))``` .If the sum of the scores are same for the some games then it will switch back to linear search for those equal values 
 - It uses binary search method to insert the game in proper position. which makes the result sorted. The complexity is ```O(log(n))```
 - So the code does not need to sort the array which save the code from sorting complexity which can go upto ```O(n2)```
 
@@ -72,8 +72,15 @@ console.log({ gameId, message });
 ### Updating Scores
 
 ```
-const { scoreUpdated, message } = scoreboard.updateScore(gameId, newHomeScore, newAwayScore);
+const { scoreUpdated, message } = scoreboard.updateScore(gameId, newHomeScore, newAwayScore, playerInitials);
 console.log({ scoreUpdated, message });
+```
+
+### Add Foul
+
+```
+const { scoreUpdated, message } = scoreboard.addFoul(gameId, playerInitials);
+console.log({ foulUpdated, message });
 ```
 
 #### Finishing a Game
