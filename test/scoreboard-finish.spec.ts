@@ -23,9 +23,9 @@ describe('Scoreboard', () => {
             .mockReturnValueOnce(mockedGameId2);
 
         scoreboard.startGame(homeTeam1, awayTeam1);
-        scoreboard.updateScore(mockedGameId1, 3, 2, 'A.B');
+        scoreboard.updateScore(mockedGameId1, 1, 0, 'A.B');
         scoreboard.startGame(homeTeam2, awayTeam2);
-        scoreboard.updateScore(mockedGameId2, 4, 2, 'P.Q');
+        scoreboard.updateScore(mockedGameId2, 2, 0, 'P.Q');
         scoreboard.finishGame(mockedGameId2);
 
         const game1 = scoreboard.getGame(mockedGameId1)

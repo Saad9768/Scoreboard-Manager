@@ -114,4 +114,58 @@ describe('Scoreboard:Fouls', () => {
 
   });
 
+  it('should not update the score for the Red carded player', () => {
+    const gameId = 'gameId0';
+    const homeTeam = 'India';
+    const awayTeam = 'Qatar';
+    const playerInitials1 = 'A.B';
+
+    jest.mocked(Utils.guid)
+      .mockReturnValueOnce(gameId)
+
+    scoreboard.startGame(homeTeam, awayTeam);
+
+    scoreboard.addFoul(gameId, playerInitials1);
+
+    scoreboard.addFoul(gameId, playerInitials1);
+
+    const { scoreUpdated, message } = scoreboard.updateScore(gameId, 0, 1, playerInitials1);
+    expect(scoreUpdated).toBe(false);
+    expect(message).toBe(`Player already has already ${FoulType.RED_CARD}`);
+  });
+
+  it('should update the score for the Yellow carded player', () => {
+    const gameId = 'gameId0';
+    const homeTeam = 'India';
+    const awayTeam = 'Qatar';
+    const playerInitials1 = 'A.B';
+
+    jest.mocked(Utils.guid)
+      .mockReturnValueOnce(gameId)
+
+    scoreboard.startGame(homeTeam, awayTeam);
+
+    scoreboard.addFoul(gameId, playerInitials1);
+
+    const { scoreUpdated, message } = scoreboard.updateScore(gameId, 0, 1, playerInitials1);
+    expect(scoreUpdated).toBe(true);
+    expect(message).toBe('Score Updated');
+  });
+
+  it('should not add foul if the game is already finished', () => {
+    const gameId = 'gameId0';
+    const homeTeam = 'India';
+    const awayTeam = 'Qatar';
+    const playerInitials1 = 'A.B';
+
+    jest.mocked(Utils.guid)
+      .mockReturnValueOnce(gameId)
+
+    scoreboard.startGame(homeTeam, awayTeam);
+    scoreboard.finishGame(gameId);
+    const { foulUpdated, message } = scoreboard.addFoul(gameId, playerInitials1);
+    expect(foulUpdated).toBe(false);
+    expect(message).toBe('Game not found or deleted' );
+  });
+
 });
