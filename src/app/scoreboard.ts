@@ -1,17 +1,6 @@
+import { FoulType } from "./type/foul_enum";
+import { Game } from "./type/game";
 import { Utils } from "./utils";
-type Goal = {
-    playerInitials: string;
-    scoreTime: number;
-};
-type Game = {
-    gameId: string;
-    homeTeam: string;
-    awayTeam: string;
-    homeScore: number;
-    awayScore: number;
-    startTime: number;
-    goals: Goal[];
-};
 
 export class Scoreboard {
     private games: Map<string, Game>;
@@ -51,7 +40,8 @@ export class Scoreboard {
             homeScore: 0,
             awayScore: 0,
             startTime: Date.now(),
-            goals: []
+            goals: [],
+            fouls: []
         };
         this.games.set(gameId, game);
         this.gameInProgress.set(homeTeam, gameId);
@@ -101,6 +91,28 @@ export class Scoreboard {
         })
         this.insertGameIntoSortedArray(game);
         return { scoreUpdated: true, message: 'Score Updated' }
+    }
+
+    addFoul(gameId: string, playerInitials: string) {
+        const game = this.getGame(gameId);
+        if (!game) {
+            return { foulUpdated: false, message: 'Game not found or deleted' }
+        }
+        const { fouls } = game;
+
+        let foulType = FoulType.YELLOW_CARD;
+        const foulPlayer = fouls.filter(r => r.playerInitials === playerInitials && r.playerInitials === playerInitials);
+        if (foulPlayer.length === 1) {
+            foulType = FoulType.RED_CARD;
+        } else if (foulPlayer.length >= 2) {
+            return { foulUpdated: false, message: `Player already got ${FoulType.RED_CARD}` }
+        }
+        fouls.push({
+            playerInitials,
+            foulType,
+            foulTime: new Date().getTime()
+        })
+        return { foulUpdated: true, message: `Foul Updated to ${foulType}` }
     }
 
     finishGame(gameId: string) {
