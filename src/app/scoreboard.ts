@@ -1,4 +1,8 @@
 import { Utils } from "./utils";
+type Goal = {
+    playerInitials: string;
+    scoreTime: number;
+};
 type Game = {
     gameId: string;
     homeTeam: string;
@@ -6,7 +10,7 @@ type Game = {
     homeScore: number;
     awayScore: number;
     startTime: number;
-    scoredTime: number[];
+    goals: Goal[];
 };
 
 export class Scoreboard {
@@ -47,7 +51,7 @@ export class Scoreboard {
             homeScore: 0,
             awayScore: 0,
             startTime: Date.now(),
-            scoredTime: []
+            goals: []
         };
         this.games.set(gameId, game);
         this.gameInProgress.set(homeTeam, gameId);
@@ -74,7 +78,7 @@ export class Scoreboard {
         }
     }
 
-    updateScore(gameId: string, homeScore: number, awayScore: number) {
+    updateScore(gameId: string, homeScore: number, awayScore: number, playerInitials: string) {
         const game = this.getGame(gameId);
         if (!game) {
             return { scoreUpdated: false, message: 'Game not found or deleted' }
@@ -83,7 +87,7 @@ export class Scoreboard {
         if (inValidScoreMessage) {
             return inValidScoreMessage;
         }
-        const { scoredTime } = game;
+        const { goals } = game;
         this.removeGameFromSortedGames(game);
         if (homeScore) {
             game.homeScore = homeScore
@@ -91,7 +95,10 @@ export class Scoreboard {
         if (awayScore) {
             game.awayScore = awayScore
         }
-        scoredTime.push(new Date().getTime())
+        goals.push({
+            playerInitials,
+            scoreTime: new Date().getTime()
+        })
         this.insertGameIntoSortedArray(game);
         return { scoreUpdated: true, message: 'Score Updated' }
     }
@@ -117,13 +124,6 @@ export class Scoreboard {
         if (gameIndex !== -1) {
             this.sortedGames.splice(gameIndex, 1)
         }
-        // else {
-        //     console.log('========================================')
-        //     console.log('game ::', game)
-        //     console.log('gameIndex ::', gameIndex)
-        //     console.log('this.sortedGames ::', this.sortedGames)
-        //     console.log('========================================')
-        // }
     }
     private findGameIndexByGameId(game: Game) {
         let low = 0;
