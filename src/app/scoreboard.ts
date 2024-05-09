@@ -60,13 +60,8 @@ export class Scoreboard {
         return this.games.get(gameId);
     }
 
-    updateScore(gameId: string, homeScore: number, awayScore: number) {
-
-        const game = this.getGame(gameId);
-        if (!game) {
-            return { scoreUpdated: false, message: 'Game not found or deleted' }
-        }
-        const { homeScore: currentHomeScore, awayScore: currentAwayScore, scoredTime } = game;
+    private checkScore(game: Game, homeScore: number, awayScore: number) {
+        const { homeScore: currentHomeScore, awayScore: currentAwayScore } = game;
 
         if (currentHomeScore === homeScore && currentAwayScore === awayScore) {
             return { scoreUpdated: false, message: 'Cannot be incremented, score will be same' }
@@ -77,6 +72,18 @@ export class Scoreboard {
         if (homeScore !== currentHomeScore && awayScore !== currentAwayScore) {
             return { scoreUpdated: false, message: 'Update one score at a time' }
         }
+    }
+
+    updateScore(gameId: string, homeScore: number, awayScore: number) {
+        const game = this.getGame(gameId);
+        if (!game) {
+            return { scoreUpdated: false, message: 'Game not found or deleted' }
+        }
+        const inValidScoreMessage = this.checkScore(game, homeScore, awayScore)
+        if (inValidScoreMessage) {
+            return inValidScoreMessage;
+        }
+        const { scoredTime } = game;
         this.removeGameFromSortedGames(game);
         if (homeScore) {
             game.homeScore = homeScore
