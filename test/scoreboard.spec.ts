@@ -1,4 +1,5 @@
 import { Scoreboard } from '../src/app/scoreboard';
+import { FoulType } from '../src/app/type/foul_enum';
 import { Utils } from '../src/app/utils';
 
 jest.mock('../src/app/utils')
@@ -137,16 +138,22 @@ describe('Scoreboard', () => {
     scoreboard.startGame(homeTeam0, awayTeam0);
 
     scoreboard.startGame(homeTeam1, awayTeam1);
-    scoreboard.updateScore(mockedGameId1, 0, 1, playerInitials1);
 
     scoreboard.startGame(homeTeam2, awayTeam2);
-    scoreboard.updateScore(mockedGameId2, 0, 1, playerInitials2);
 
     scoreboard.startGame(homeTeam3, awayTeam3);
     scoreboard.updateScore(mockedGameId3, 1, 0, playerInitials3);
 
     scoreboard.startGame(homeTeam4, awayTeam4);
     scoreboard.updateScore(mockedGameId4, 1, 0, playerInitials4);
+
+    scoreboard.updateScore(mockedGameId1, 0, 1, playerInitials1);
+
+    scoreboard.updateScore(mockedGameId2, 0, 1, playerInitials2);
+
+    scoreboard.addFoul(mockedGameId1, playerInitials1);
+
+    scoreboard.addFoul(mockedGameId1, playerInitials1);
 
     scoreboard.finishGame(mockedGameId3);
 
@@ -155,6 +162,19 @@ describe('Scoreboard', () => {
     expect(summary.length).toBe(4);
 
     expect(summary).toEqual([
+      {
+        gameId: mockedGameId4,
+        homeTeam: homeTeam4,
+        awayTeam: awayTeam4,
+        homeScore: 1,
+        awayScore: 0,
+        startTime: expect.any(Number),
+        goals: [{
+          scoreTime: expect.any(Number),
+          playerInitials: playerInitials4
+        }],
+        fouls: []
+      },
       {
         gameId: mockedGameId1,
         homeTeam: homeTeam1,
@@ -166,7 +186,15 @@ describe('Scoreboard', () => {
           scoreTime: expect.any(Number),
           playerInitials: playerInitials1
         }],
-        fouls: []
+        fouls: [{
+          foulType: FoulType.YELLOW_CARD,
+          foulTime: expect.any(Number),
+          playerInitials: playerInitials1
+        },{
+          foulType: FoulType.RED_CARD,
+          foulTime: expect.any(Number),
+          playerInitials: playerInitials1
+        }]
       },
       {
         gameId: mockedGameId2,
@@ -178,19 +206,6 @@ describe('Scoreboard', () => {
         goals: [{
           scoreTime: expect.any(Number),
           playerInitials: playerInitials2
-        }],
-        fouls: []
-      },
-      {
-        gameId: mockedGameId4,
-        homeTeam: homeTeam4,
-        awayTeam: awayTeam4,
-        homeScore: 1,
-        awayScore: 0,
-        startTime: expect.any(Number),
-        goals: [{
-          scoreTime: expect.any(Number),
-          playerInitials: playerInitials4
         }],
         fouls: []
       },

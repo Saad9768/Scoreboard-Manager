@@ -3,7 +3,7 @@ import { Utils } from '../src/app/utils';
 
 jest.mock('../src/app/utils')
 
-describe('Scoreboard', () => {
+describe('Scoreboard:Finish', () => {
     let scoreboard: Scoreboard;
     beforeEach(() => {
         jest.clearAllMocks()
